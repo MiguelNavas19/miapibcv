@@ -16,47 +16,36 @@ class ScraperController extends Controller
     public function __construct(UrlProviderService $urlProvider)
     {
         $this->urlProvider = $urlProvider;
-        $this->banco = ['bdv', 'banplus', 'bnc'];
+        $this->banco = ['bdv', 'banplus', 'bnc', 'bcv'];
     }
 
 
     public function show(Request $request)
     {
-
         $this->logApi($request);
-        $record = ReferenceRecord::where('date', now()->toDateString())->get();
+        $today = now()->toDateString();
 
-        if ($record->isNotEmpty()) {
-            $bdvRecord = $record->firstWhere('source', 'bdv');
-            $bncRecord = $record->firstWhere('source', 'bnc');
-            $banplusRecord = $record->firstWhere('source', 'banplus');
-            $bcvRecord = $record->firstWhere('source', 'bcv');
+        $records = ReferenceRecord::where('date', $today)
+            ->get()
+            ->keyBy('source');
+
+        if ($records->isNotEmpty()) {
+            $data = $records->map(fn($item) => [
+                'value' => $item->value,
+                'date'  => $item->date
+            ]);
+
             return response()->json([
                 'message' => 'Consulta exitosa',
-                'bdv' => $bdvRecord ? [
-                    'value' => $bdvRecord->value,
-                    'date' => $bdvRecord->date
-                ] : null,
-                'bnc' => $bncRecord ? [
-                    'value' => $bncRecord->value,
-                    'date' => $bncRecord->date
-                ] : null,
-                'banplus' => $banplusRecord ? [
-                    'value' => $banplusRecord->value,
-                    'date' => $banplusRecord->date
-                ] : null,
-                'bcv' => $bcvRecord ? [
-                    'value' => $bcvRecord->value,
-                    'date' => $bcvRecord->date
-                ] : null
+                ...$data->toArray()
             ], 200);
-        } else {
-
-            foreach ($this->banco as $banco) {
-                $this->store($banco);
-            }
-            return $this->getData();
         }
+
+        foreach ($this->banco as $banco) {
+            $this->store($banco);
+        }
+
+        return $this->getData();
     }
 
     protected function store(string $banco)
@@ -83,6 +72,7 @@ class ScraperController extends Controller
             $bdvRecord = $record->firstWhere('source', 'bdv');
             $bncRecord = $record->firstWhere('source', 'bnc');
             $banplusRecord = $record->firstWhere('source', 'banplus');
+            $bcvRecord = $record->firstWhere('source', 'bcv');
             return response()->json([
                 'message' => 'Consulta exitosa',
                 'bdv' => $bdvRecord ? [
@@ -96,6 +86,10 @@ class ScraperController extends Controller
                 'banplus' => $banplusRecord ? [
                     'value' => $banplusRecord->value,
                     'date' => $banplusRecord->date
+                ] : null,
+                'bcv' => $bcvRecord ? [
+                    'value' => $bcvRecord->value,
+                    'date' => $bcvRecord->date
                 ] : null
             ], 200);
         }
@@ -165,25 +159,21 @@ class ScraperController extends Controller
 
     private function validateDate(&$date)
     {
-        if (!$date) {
+        if (empty($date)) {
             $date = now()->toDateString();
             return true;
         }
 
-        if (preg_match('/^\d{2}-\d{2}-\d{4}$/', $date)) {
-            $dt = \DateTime::createFromFormat('d-m-Y', $date);
-            if ($dt) {
-                $date = $dt->format('Y-m-d');
-            } else {
-                return false;
-            }
-        }
+        try {
 
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            $dt = \Illuminate\Support\Carbon::parse($date);
+
+            $date = $dt->toDateString();
+
+            return $dt->lessThanOrEqualTo(now());
+        } catch (\Exception $e) {
             return false;
         }
-
-        return $date <= now()->toDateString();
     }
 
 

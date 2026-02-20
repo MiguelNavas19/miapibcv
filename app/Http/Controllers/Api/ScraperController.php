@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ReferenceRecord;
 use App\Services\UrlProviderService;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class ScraperController extends Controller
 {
@@ -18,9 +20,10 @@ class ScraperController extends Controller
     }
 
 
-    public function show()
+    public function show(Request $request)
     {
 
+        $this->logApi($request);
         $record = ReferenceRecord::where('date', now()->toDateString())->get();
 
         if ($record->isNotEmpty()) {
@@ -56,7 +59,7 @@ class ScraperController extends Controller
         }
     }
 
-    public function store(string $banco)
+    protected function store(string $banco)
     {
         $value = $this->urlProvider->getStrategy($banco)->getValue();
         if ($value) {
@@ -100,8 +103,11 @@ class ScraperController extends Controller
         return response()->json(['message' => 'No se encontraron datos'], 404);
     }
 
-    public function getInfo($date = null, $source = null)
+    public function getInfo(Request $request, $date = null, $source = null)
     {
+
+        $this->logApi($request);
+
         if (!$this->validateDate($date)) {
             return response()->json(['message' => 'Fecha inválida'], 400);
         }
@@ -178,5 +184,17 @@ class ScraperController extends Controller
         }
 
         return $date <= now()->toDateString();
+    }
+
+
+
+
+    protected function logApi($request)
+    {
+        Log::info("API Access", [
+            'ip' => $request->ip(),
+            'url' => $request->fullUrl(),
+            'time' => now()->toDateTimeString()
+        ]);
     }
 }

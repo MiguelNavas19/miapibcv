@@ -9,5 +9,20 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 
-Schedule::command('rates:update')->dailyAt('08:00');
-Schedule::command('rates:update')->dailyAt('14:00');
+$schedules = [
+    '00:00',
+    '00:30',
+    '02:00',
+    '03:00',
+    '03:30',
+    '04:00',
+    '05:00',
+    '05:30',
+    '06:30',
+    '07:00',
+    '07:30'
+];
+
+foreach ($schedules as $time) {
+    $schedule->command('rates:update')->dailyAt($time);
+}

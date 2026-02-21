@@ -6,18 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Models\ReferenceRecord;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Carbon;
 
 class ScraperController extends Controller
 {
 
-
     public function show(Request $request)
     {
-
         $this->logApi($request);
-        $records = ReferenceRecord::where('date', now()->toDateString())
-            ->get()
-            ->keyBy('source');
+
+        // Creamos una llave única para el caché basada en la fecha de hoy
+        $cacheKey = 'tasas_bancos_' . now()->toDateString();
+
+        // Intentamos obtener del caché, si no existe, ejecutamos la lógica y guardamos por 1 hora (3600 seg)
+        $records = Cache::remember($cacheKey, 3600, function () {
+            return ReferenceRecord::where('date', now()->toDateString())
+                ->get()
+                ->keyBy('source');
+        });
 
         if ($records->isEmpty()) {
             return response()->json(['message' => 'Tasas no disponibles aún'], 404);
@@ -25,7 +32,10 @@ class ScraperController extends Controller
 
         return response()->json([
             'message' => 'Consulta exitosa',
-            ...$records->map(fn($item) => ['value' => $item->value, 'date' => $item->date])
+            ...$records->map(fn($item) => [
+                'value' => $item->value,
+                'date' => $item->date
+            ])->all()
         ]);
     }
 
@@ -40,22 +50,24 @@ class ScraperController extends Controller
             return response()->json(['message' => 'Fecha inválida'], 400);
         }
 
+        $cacheKey = "tasas_bancos_{$queryDate}";
+
         // 2. Consulta base
-        $query = ReferenceRecord::whereDate('date', $queryDate);
+        $allRecords = Cache::remember($cacheKey, 3600, function () use ($queryDate) {
+            return ReferenceRecord::whereDate('date', $queryDate)->get();
+        });
 
-        // 3. Filtro opcional por fuente
-        if ($source) {
-            $query->where('source', $source);
-        }
+        // 3. Filtro opcional por Banco
+        $records = $source
+            ? $allRecords->where('source', $source)
+            : $allRecords;
 
-        $records = $query->get();
 
         if ($records->isEmpty()) {
             return response()->json(['message' => 'No se encontraron datos'], 404);
         }
 
         // 4. Transformar la colección a un formato dinámico
-        // Esto agrupa los datos por 'source' automáticamente
         $formattedData = $records->mapWithKeys(function ($item) {
             return [
                 $item->source => [
@@ -67,11 +79,9 @@ class ScraperController extends Controller
 
         return response()->json([
             'message' => 'Consulta exitosa',
-            ...$formattedData // Inyecta dinámicamente 'bcv', 'bdv', etc.
+            ...$formattedData
         ], 200);
     }
-
-
 
 
     private function validateDate(&$date)
@@ -83,8 +93,7 @@ class ScraperController extends Controller
 
         try {
 
-            $dt = \Illuminate\Support\Carbon::parse($date);
-
+            $dt = Carbon::parse($date);
             $date = $dt->toDateString();
 
             return $dt->lessThanOrEqualTo(now());
@@ -92,8 +101,6 @@ class ScraperController extends Controller
             return false;
         }
     }
-
-
 
 
     protected function logApi($request)

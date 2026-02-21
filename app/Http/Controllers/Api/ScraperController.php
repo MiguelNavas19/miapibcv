@@ -15,6 +15,7 @@ class ScraperController extends Controller
     public function show(Request $request)
     {
         $this->logApi($request);
+
         // Creamos una llave única para el caché basada en la fecha de hoy
         $cacheKey = 'tasas_bancos_' . now()->toDateString();
 

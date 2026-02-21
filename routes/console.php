@@ -24,5 +24,5 @@ $schedules = [
 ];
 
 foreach ($schedules as $time) {
-    $schedule->command('rates:update')->dailyAt($time);
+    Schedule::command('rates:update')->dailyAt($time);
 }

@@ -14,7 +14,10 @@ class UrlBdv implements UrlStrategy
     public function getValue(): float
     {
         try {
-            $response = Http::timeout(10)
+            /** @var Response $response */
+            $response = Http::retry(3, 100)
+                ->timeout(10)
+                ->withOptions(['verify' => true])
                 ->withHeaders([
                     'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36',
                     'Accept'     => 'application/json',

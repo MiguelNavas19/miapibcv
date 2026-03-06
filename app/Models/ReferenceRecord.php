@@ -10,5 +10,5 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 #[ObservedBy([ReferenceObserver::class])]
 class ReferenceRecord extends Model
 {
-    //
+    protected $fillable = ['source', 'value', 'date'];
 }

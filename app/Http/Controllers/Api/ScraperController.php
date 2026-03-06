@@ -105,10 +105,11 @@ class ScraperController extends Controller
 
     protected function logApi($request)
     {
-        Log::info("API Access", [
-            'ip' => $request->ip(),
-            'url' => $request->fullUrl(),
-            'time' => now()->toDateTimeString()
+        // store only minimal, non‑sensitive information in the logs
+        Log::info('API Access', [
+            'ip'   => $request->ip(),
+            'path' => $request->path(),            
+            'time' => now()->toDateTimeString(),
         ]);
     }
 }

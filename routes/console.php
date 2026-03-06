@@ -10,18 +10,17 @@ Artisan::command('inspire', function () {
 
 
 $schedules = [
-    '00:00',
-    '00:30',
+    '12:00',
+    '01:00',
     '02:00',
     '03:00',
-    '03:30',
     '04:00',
     '05:00',
-    '05:30',
-    '06:30',
+    '06:00',
     '07:00',
-    '07:30'
+    '08:00'
 ];
+
 
 foreach ($schedules as $time) {
     Schedule::command('rates:update')->dailyAt($time);

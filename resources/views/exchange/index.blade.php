@@ -8,13 +8,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600&family=Montserrat+Alternates:wght@600;700&display=swap"
         rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
             --bg-page: #f5f4f0;
-            --bg-card: #ffffff;
+            --bg-card: #fff;
             --border-subtle: #e8e6e1;
             --accent-gold: #b8956e;
             --accent-gold-light: #d4c4a8;
@@ -24,254 +24,198 @@
             --text-muted: #9a9a9a;
             --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.04);
             --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --brand-highlight: linear-gradient(102deg, #c5ae87 10%, #e7d8ba 74%);
         }
 
-        *,
-        *::before,
-        *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        html,
+        body {
+            background: var(--bg-page);
+            min-height: 100vh;
+            font-family: 'Source Sans 3', sans-serif;
         }
 
         body {
-            font-family: 'Source Sans 3', -apple-system, sans-serif;
-            background-color: var(--bg-page);
             color: var(--text-primary);
-            min-height: 100vh;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 640px;
+            max-width: 700px;
             margin: 0 auto;
-            padding: 80px 24px;
+            padding: 38px 8px 32px 8px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 48px;
+        header.hero-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-bottom: 20px;
         }
 
-        .eyebrow {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent-gold);
-            margin-bottom: 12px;
-        }
-
-        h1 {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: clamp(36px, 7vw, 52px);
-            font-weight: 500;
-            letter-spacing: -0.5px;
-            color: var(--text-primary);
+        .dollar-logo {
+            width: 82px;
+            height: 82px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 8px;
         }
 
-        .subtitle {
-            font-size: 15px;
+        /* SVG special style for dollar arc */
+        .brand-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.35rem;
+            font-weight: 700;
+            color: #392e19;
+            letter-spacing: -1.1px;
+            line-height: 1.14;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .badge-ve {
+            font-family: 'Montserrat Alternates', sans-serif;
+            font-size: 0.97rem;
+            background: var(--brand-highlight);
+            color: var(--accent-gold);
+            border-radius: 5.5px;
+            padding: 0.5px 6.5px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            box-shadow: 0 2px 8px 0 rgba(200, 180, 120, .08);
+            margin-left: 7px;
+        }
+
+        .subheader-row {
+            color: var(--accent-sage);
+            font-family: 'Montserrat Alternates', sans-serif;
+            font-weight: 600;
+            font-size: 14.2px;
+            margin: 12px 0 2px 0;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .live-clock {
+            font-size: 20px;
+            font-family: 'Montserrat Alternates', sans-serif;
+            letter-spacing: 0.14em;
             color: var(--text-secondary);
-            font-weight: 300;
-        }
-
-        .rate-limit-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin-bottom: 40px;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .rate-limit-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .rate-limit-label {
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-        }
-
-        .rate-limit-count {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .rate-limit-bar {
-            height: 4px;
-            background: var(--border-subtle);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
-
-        .rate-limit-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-gold), var(--accent-sage));
-            border-radius: 2px;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .rate-limit-fill.warning {
-            background: #e8a87c;
-        }
-
-        .rate-limit-fill.danger {
-            background: #c97c7c;
-        }
-
-        .rate-limit-footer {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .rate-limit-footer svg {
-            width: 14px;
-            height: 14px;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-
-        .rate-limit-footer.active svg {
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
+            font-weight: 700;
         }
 
         .rates-grid {
             display: grid;
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(218px, 1fr));
+            gap: 28px;
+            margin-top: 18px;
+            margin-bottom: 12px;
         }
 
         .rate-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            background: linear-gradient(112deg, #fffbe9 60%, #f4eee3 100%);
+            border: 1.2px solid var(--accent-gold-light);
+            border-radius: 19px;
+            position: relative;
             box-shadow: var(--shadow-soft);
-            transition: all 0.3s ease;
-            opacity: 0;
-            animation: fadeSlideUp 0.5s ease forwards;
+            padding: 28px 18px 16px 18px;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            height: 178px;
+            transition: box-shadow 0.25s, border 0.22s, transform 0.22s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .rate-card:after {
+            content: '';
+            position: absolute;
+            bottom: -13px;
+            right: -13px;
+            width: 58px;
+            height: 58px;
+            background: radial-gradient(ellipse at center, #e1cdb1 26%, transparent 74%);
+            opacity: .14;
+            z-index: 1;
+            pointer-events: none;
         }
 
         .rate-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--accent-gold-light);
+            box-shadow: 0 10px 30px rgba(185, 149, 110, 0.16);
+            border-color: var(--accent-gold);
+            transform: translateY(-3px) scale(1.02);
         }
 
-        .rate-card:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .rate-card:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .rate-card:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        .rate-card:nth-child(4) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes fadeSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .rate-card-left {
+        .rc-flex {
             display: flex;
+            flex-direction: row;
             align-items: center;
             gap: 16px;
+            margin-bottom: 14px;
         }
 
         .bank-icon {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--bg-page), #f0efe9);
-            border-radius: 10px;
+            width: 39px;
+            height: 39px;
+            background: var(--bg-card);
+            border-radius: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
+            border: 1px solid var(--accent-gold-light);
         }
 
         .bank-info h3 {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 18px;
-            font-weight: 500;
+            font-family: 'Montserrat Alternates', 'Playfair Display', Georgia, serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            color: #3a3935;
             margin-bottom: 2px;
+            margin-top: 0;
         }
 
         .bank-info p {
             font-size: 12px;
             color: var(--text-muted);
+            margin: 0;
         }
 
-        .rate-card-right {
+        .rc-val {
+            margin-left: auto;
             text-align: right;
         }
 
         .rate-value {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--text-primary);
-            font-variant-numeric: tabular-nums;
-            line-height: 1.2;
+            font-size: 26.5px;
+            font-weight: 800;
+            color: var(--accent-gold);
+            font-family: 'Montserrat Alternates', sans-serif;
+            letter-spacing: -2px;
+            line-height: 1.06;
         }
 
         .rate-unit {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1.1px;
         }
 
         .rate-date {
             font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 4px;
+            color: var(--text-secondary);
+            margin-top: 2px;
         }
 
         .empty-state {
             text-align: center;
-            padding: 64px 24px;
+            padding: 56px 20px;
             background: var(--bg-card);
             border: 1px dashed var(--border-subtle);
             border-radius: 12px;
@@ -284,57 +228,62 @@
 
         footer {
             text-align: center;
-            margin-top: 56px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border-subtle);
+            padding: 10px;
+            border: 1.3px solid var(--border-subtle);
+            background: var(--bg-card);
+            border-radius: 19px 19px 19px 19px;
+            box-shadow: var(--shadow-soft);
         }
 
-        footer p {
-            font-size: 12px;
-            color: var(--text-muted);
+
+
+        @media (max-width:900px) {
+            .rates-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width:600px) {
             .container {
-                padding: 48px 16px;
+                padding: 19px 2px 12px;
             }
 
-            header {
-                margin-bottom: 32px;
-            }
-
-            .rate-card {
-                padding: 20px;
-            }
-
-            .bank-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-
-            .rate-value {
-                font-size: 20px;
+            .rates-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 
 <body>
-
-
     <main class="container">
-        <header>
-            <span class="eyebrow">Venezuela</span>
-            <h1>Tasas del Dólar</h1>
-            <p class="subtitle">{{ now()->translatedFormat('d F Y') }}</p>
+        <header class="hero-block">
+            <div class="brand-title">Tasas del Dólar <span class="badge-ve">VE</span></div>
+            <div class="subheader-row">
+                <span id="mainDate">{{ now()->translatedFormat('d F Y') }}</span><span class="live-clock"
+                    id="mainHour"></span>
+            </div>
         </header>
-
+        <script>
+            // Reloj digital en vivo
+            function updateTime() {
+                const d = new Date();
+                const locale = 'es-VE';
+                let opts = {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                };
+                document.getElementById('mainHour').textContent = d.toLocaleTimeString(locale, opts);
+            }
+            setInterval(updateTime, 1000);
+            window.addEventListener('DOMContentLoaded', updateTime);
+        </script>
         @if ($rates)
             <div class="rates-grid">
                 @foreach ($rates as $key => $rate)
                     <div class="rate-card">
-                        <div class="rate-card-left">
+                        <div class="rc-flex">
                             <div class="bank-icon">
                                 @switch($key)
                                     @case('bcv')
@@ -384,11 +333,11 @@
                                     @endswitch
                                 </p>
                             </div>
-                        </div>
-                        <div class="rate-card-right">
-                            <div class="rate-value">{{ number_format($rate['value'], 2) }}</div>
-                            <div class="rate-unit">Bs por USD</div>
-                            <div class="rate-date">{{ $rate['date'] }}</div>
+                            <div class="rc-val">
+                                <div class="rate-value">{{ number_format($rate['value'], 2) }}</div>
+                                <div class="rate-unit">Bs por USD</div>
+                                <div class="rate-date">{{ $rate['date'] }}</div>
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -398,12 +347,11 @@
                 <p>No hay tasas disponibles aún.</p>
             </div>
         @endif
-
         <footer>
-            <p>Datos de BCV, BNC, BDV y Banplus</p>
+            <p style="font-size:13px; color:var(--text-muted);line-height:1.4;">&copy; {{ date('Y') }}
+            </p>
         </footer>
     </main>
-
 </body>
 
 </html>

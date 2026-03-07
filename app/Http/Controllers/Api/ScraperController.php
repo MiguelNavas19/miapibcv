@@ -30,13 +30,10 @@ class ScraperController extends Controller
             return response()->json(['message' => 'Tasas no disponibles aún'], 404);
         }
 
-        return response()->json([
-            'message' => 'Consulta exitosa',
-            ...$records->map(fn($item) => [
-                'value' => $item->value,
-                'date' => $item->date
-            ])->all()
-        ]);
+        return $records->map(fn($item) => [
+            'value' => $item->value,
+            'date' => $item->date,
+        ])->toArray();
     }
 
 
@@ -108,7 +105,7 @@ class ScraperController extends Controller
         // store only minimal, non‑sensitive information in the logs
         Log::info('API Access', [
             'ip'   => $request->ip(),
-            'path' => $request->path(),            
+            'path' => $request->path(),
             'time' => now()->toDateTimeString(),
         ]);
     }
